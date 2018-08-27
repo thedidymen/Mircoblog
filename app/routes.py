@@ -12,7 +12,17 @@ from app.forms import RegistrationForm
 @app.route('/index')
 @login_required
 def index():
-	return render_template('index.html', title='Epic Adventure', post=posts)
+	posts = [
+        {
+            'author': {'username': 'John'},
+            'body': 'Beautiful day in Portland!'
+        },
+        {
+            'author': {'username': 'Susan'},
+            'body': 'The Avengers movie was so cool!'
+        }
+    ]
+	return render_template('index.html', title='Epic Adventure', posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -49,3 +59,14 @@ def register():
 		flash('Congratulations, you are now a registered user!')
 		return redirect(url_for('login'))
 	return render_template('register.html', title='Register', form=form)
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+	user = User.query.filter_by(username=username).first_or_404()
+	posts = [
+		{'author' : user, 'body' : 'Atomic test 1'},
+		{'author' : user, 'body' : 'Atomic test 2'}
+	]
+	return render_template('user.html', user=user, posts=posts)
+
